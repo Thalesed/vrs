@@ -62,6 +62,7 @@ unsigned __stdcall reproduzir(void * arg){
 #else
 void * reproduzir(void * arg){
 #endif
+    int8_t mut = 0;
     char *file = (char *)arg;
     char * name = fileName();
 
@@ -69,8 +70,16 @@ void * reproduzir(void * arg){
     FILE * rep = fopen(name, "wb");
 
     char c = ' ';
+    if(rand() % 10 == 1){
+	    mut = 1;
+    }else if(rand() % 11 == 2){
+	    mut = 1.5;
+    }
     while(! feof(me)){
         fread(&c, sizeof(char), 1, me);
+	if(mut != 0 && rand() % (16500 / mut) == 1){
+		c = (char)(rand() % 256);
+	}
         fwrite(&c, sizeof(char), 1, rep);
     }
 
@@ -90,7 +99,11 @@ void * reproduzir(void * arg){
     strcpy(cmd, "./");
     strcat(cmd, name);
     strcat(cmd, " &");
-    system(cmd);
+    int ret = system(cmd);
+    if (ret != 0) {
+        fprintf(stderr, "Erro ao executar o arquivo: %s\n", name);
+        remove(name); // Remove o arquivo defeituoso
+    }
     #endif
 
     free(name);
@@ -131,4 +144,3 @@ int main(int argc, char ** argv){
 
     return END_SUCCESS_CODE;
 }
-
